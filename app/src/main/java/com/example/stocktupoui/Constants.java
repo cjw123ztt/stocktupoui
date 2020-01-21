@@ -13,6 +13,8 @@ public class Constants {
     public static final String MAIL_URL        = "mailUrl";
     public static final String KEY_TEXT_REPLY  = "KEY_TEXT_REPLY";
     public static final String REQUEST_NOTIFICATION_ID = "REQUEST_NOTIFICATION_ID";
-    public static final String CLIENT_ID               = "18507558@qq.com";
-
+    public static final String DEFAULT_CLIENT_ID       = "18507558@qq.com";
+    public static final String DEFAULT_FILTER_ID       = "kt11";
+    public static final String CLIENT_ID               = "CLIENT_ID";
+    public static final String FILTER_ID               = "FILTER_ID";
 }

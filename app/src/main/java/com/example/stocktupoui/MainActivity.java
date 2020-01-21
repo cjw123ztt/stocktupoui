@@ -11,10 +11,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.*;
 //
-import android.provider.SyncStateContract;
 import android.view.KeyEvent;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.app.NotificationManager;
 import android.app.NotificationChannel;
@@ -22,6 +24,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.Context;
+import android.content.SharedPreferences;
 //
 import androidx.core.app.RemoteInput;
 //
@@ -36,16 +39,34 @@ import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 
 //
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //
+        //if (savedInstanceState!=null)
+        //{
+        //    clientProvideName = savedInstanceState.getString(Constants.CLIENT_ID);
+        //    filter            = savedInstanceState.getString(Constants.FILTER_ID);
+        //}
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.DEFAULT_CLIENT_ID, Context.MODE_PRIVATE);
+        if (sharedPreferences!=null)
+        {
+            clientProvideName = sharedPreferences.getString(Constants.CLIENT_ID,Constants.DEFAULT_CLIENT_ID);
+            filter            = sharedPreferences.getString(Constants.FILTER_ID,Constants.DEFAULT_FILTER_ID);
+        }
+        if ( clientProvideName=="")
+        {
+            clientProvideName = Constants.DEFAULT_CLIENT_ID;
+        }
+        //
+        initControl();
+        //
         init_channel();
         //
-        send_notification("onCreate",String.format("%d",getTaskId()));
+        send_notification("onCreate",String.format("%d:%s:%s",getTaskId(),clientProvideName,filter));
         //
         setupConnectionFactory();
         //
@@ -151,24 +172,35 @@ public class MainActivity extends AppCompatActivity {
                             e.getMessage();
                             e.printStackTrace();
                             Log.d("twapui", String.format("err.publishChannel.requestNotifyId:%d",requestNotifyId));
+                            send_notification("onNewIntent",String.format("err.publishChannel.requestNotifyId:%d",requestNotifyId));
                         }
                     }
                 });
                 publishThread.start();
                 Log.d("twapui", String.format("publishChannel.requestNotifyId:%d",requestNotifyId));
-                //send_notification("onNewIntent",String.format("TaskId:%d:%s:%d",getTaskId(),message,requestNotifyId));
+                //send_notification("onNewIntent",String.format("publishChannel.requestNotifyId:%d",requestNotifyId));
             }
         }
         else
         {
-            send_notification("onNewIntent",String.format("TaskId:%d:%s",getTaskId(),message));
+            //send_notification("onNewIntent",String.format("TaskId:%d:%s",getTaskId(),message));
         }
 
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        send_notification("onSaveInstanceState",String.format("%d",getTaskId()));
+        //
+        outState.putString(Constants.CLIENT_ID,clientProvideName);
+        outState.putString(Constants.FILTER_ID,filter);
+        //
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.DEFAULT_CLIENT_ID, Context.MODE_PRIVATE);
+        android.content.SharedPreferences.Editor editor = sharedPreferences.edit();//获取编辑器
+        editor.putString(Constants.CLIENT_ID,clientProvideName);
+        editor.putString(Constants.FILTER_ID,filter);
+        editor.commit();//提交修改
+        //
+        //send_notification("onSaveInstanceState",String.format("%d:%s:%s",getTaskId(),clientProvideName,filter));
     }
     private void onMessageReceived(final String subject,final String body) {
         runOnUiThread(new Runnable() {
@@ -192,7 +224,54 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     //
-    String clientProvideName;
+    private void initControl()
+    {
+        EditText tvClientId = (EditText) findViewById(R.id.id_mail_client_id_content);
+        tvClientId.setFocusableInTouchMode(true);
+        tvClientId.setFocusable(true);
+        tvClientId.requestFocus();
+        tvClientId.setText(clientProvideName);
+        //
+        EditText tvFilter = (EditText) findViewById(R.id.id_mail_filter_content);
+        tvFilter.setFocusableInTouchMode(true);
+        tvFilter.setFocusable(true);
+        tvFilter.requestFocus();
+        tvFilter.setText(filter);
+    }
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.id_btn_reset:
+                Log.d("twapui","R.id.id_btn_reset");
+                //send_notification("onClick","R.id.id_btn_reset");
+                clientProvideName = Constants.DEFAULT_CLIENT_ID;
+                filter=Constants.DEFAULT_FILTER_ID;
+                EditText tvClient = (EditText) findViewById(R.id.id_mail_client_id_content);
+                tvClient.setText(clientProvideName);
+                EditText tvFilt = (EditText) findViewById(R.id.id_mail_filter_content);
+                tvFilt.setText(filter);
+                break;
+            case R.id.id_btn_apply:
+                Log.d("twapui","R.id.id_btn_apply");
+                //send_notification("onClick","R.id.id_btn_apply");
+                EditText tvClientId = (EditText) findViewById(R.id.id_mail_client_id_content);
+                clientProvideName = tvClientId.getText().toString();
+                EditText tvFilter = (EditText) findViewById(R.id.id_mail_filter_content);
+                filter = tvFilter.getText().toString();
+                send_notification("onClick","R.id.id_btn_apply:"+clientProvideName+":"+filter);
+                SharedPreferences sharedPreferences = getSharedPreferences(Constants.DEFAULT_CLIENT_ID, Context.MODE_PRIVATE);
+                android.content.SharedPreferences.Editor editor = sharedPreferences.edit();//获取编辑器
+                editor.putString(Constants.CLIENT_ID,clientProvideName);
+                editor.putString(Constants.FILTER_ID,filter);
+                editor.commit();
+                break;
+            default:
+
+        }
+    }
+    //
+    String filter="";
+    String clientProvideName="";
+    String clientId="";
     private Thread connectionThread;
     ConnectionFactory factory = new ConnectionFactory();
     private Connection connection;
@@ -404,7 +483,7 @@ public class MainActivity extends AppCompatActivity {
                     //
                     //send_notification("setupConnectionFactory.run",String.format("%d",getTaskId()));
                     //
-                    clientProvideName ="18017162448";
+                    //clientProvideName ="18017162448";
                     String amqpuri    = "amqp://covprbbm:9exUT3KY19XpOfngiwkFVj99KOmM1xV5@fish.rmq.cloudamqp.com/covprbbm";
                     amqpuri           = "amqp://covprbbm:9exUT3KY19XpOfngiwkFVj99KOmM1xV5@184.72.215.102/covprbbm";
                     //clientProvideName ="androidSimu";
@@ -412,11 +491,11 @@ public class MainActivity extends AppCompatActivity {
                     int pid           = android.os.Process.myPid();
                     int taskId        = getTaskId();
                     //clientProvideName = clientProvideName + "_" + String.format("%d_%d",pid,taskId);
-                    clientProvideName = clientProvideName + "_" + String.format("%d",taskId);
+                    //clientProvideName = clientProvideName + "_" + String.format("%d",taskId);
                     //
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");// HH:mm:ss//获取当前时间
                     Date date = new Date(System.currentTimeMillis());
-                    clientProvideName = clientProvideName + "_" + simpleDateFormat.format(date);
+                    //clientProvideName = clientProvideName + "_" + simpleDateFormat.format(date);
                     //
                     factory.setUri(new URI(amqpuri));
                     //
@@ -471,8 +550,8 @@ public class MainActivity extends AppCompatActivity {
                             Object mailBody    = properties.getHeaders().get(Constants.MAIL_BODY);
                             Object mailTag     = properties.getHeaders().get(Constants.MAIL_TAG);
                             Object objNotifyId = properties.getHeaders().get(Constants.REQUEST_NOTIFICATION_ID);
-                            Log.d("twapui", new String(mailSubject.toString()));
-                            Log.d("twapui", new String(mailBody.toString()));
+                            Log.d("twapui", "handleDelivery:mailSubject:"+new String(mailSubject.toString()));
+                            Log.d("twapui", "handleDelivery:mailBody:"+new String(mailBody.toString()));
                             //Log.d("twapui", new String(body));
                             onMessageReceived(mailSubject.toString(),mailBody.toString());
                             //
@@ -481,16 +560,31 @@ public class MainActivity extends AppCompatActivity {
                             {
                                 tag = mailTag.toString();
                             }
-                            int requestNotifyId = 0;
-                            if (objNotifyId!=null)
+                            Log.d("twapui", "handleDelivery:mailTag:"+tag+":filter:"+filter);
+                            //
+                            boolean bFilter = true;
+                            if (filter!="")
                             {
-                                requestNotifyId = Integer.parseInt(objNotifyId.toString());
-                                send_reply_broadcast_notification(mailSubject.toString(),mailBody.toString(),tag,requestNotifyId);
-                                Log.d("twapui", String.format("handleDelivery.requestNotifyId:%d",requestNotifyId));
+                                boolean bMatch = Pattern.matches(filter, tag) || Pattern.matches(filter, mailSubject.toString())|| Pattern.matches(filter, mailBody.toString());
+                                send_reply_broadcast_notification(mailSubject.toString(), mailBody.toString(), String.format("%s:%s:%s",String.valueOf(bMatch),filter,clientProvideName));
+                                //boolean bMatch = false;
+                                if (tag.indexOf(filter)>=0||mailBody.toString().indexOf(filter)>=0||mailSubject.toString().indexOf(filter)>=0)
+                                {
+                                    //bMatch = true;
+                                }
+                                Log.d("twapui", String.format("handleDelivery.Filter.Result:%s:%s:%s",String.valueOf(bMatch),filter,tag));
+                                bFilter = bMatch;
                             }
-                            else
-                            {
-                                send_reply_broadcast_notification(mailSubject.toString(),mailBody.toString(),tag);
+                            //
+                            if (bFilter==true) {
+                                int requestNotifyId = 0;
+                                if (objNotifyId != null) {
+                                    requestNotifyId = Integer.parseInt(objNotifyId.toString());
+                                    send_reply_broadcast_notification(mailSubject.toString(), mailBody.toString(), tag, requestNotifyId);
+                                    Log.d("twapui", String.format("handleDelivery.requestNotifyId:%d", requestNotifyId));
+                                } else {
+                                    send_reply_broadcast_notification(mailSubject.toString(), mailBody.toString(), tag);
+                                }
                             }
                             //
                             //Log.d("twapui", "3.testui");

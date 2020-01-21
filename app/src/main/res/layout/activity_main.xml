@@ -6,25 +6,194 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/id_mail_subject"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="mail subject"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <TableLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:shrinkColumns="*"
+        android:stretchColumns="*"
+        android:background="#ffffff">
 
-    <TextView
-        android:id="@+id/id_mail_body"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="mail body"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/id_mail_subject"
-        />
+        <!-- Row 1 Starts From Here -->
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Notice"
+                android:textIsSelectable="true"
+                android:singleLine="false"
+                android:textSize="20dp"
+                android:padding="20dp"
+                android:layout_span="3"
+                android:background="#64FFDA"
+                android:textColor="#ffffff"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+        </TableRow>
+
+        <!-- Row 2 Starts From Here -->
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/id_mail_client_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ClientId:"
+                android:textSize="12dp"
+                android:padding="20dp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_weight="1"
+                />
+
+            <EditText
+                android:id="@+id/id_mail_client_id_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:editable="true"
+                android:textSize="12dp"
+                android:padding="20dp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:gravity="center"/>
+
+
+        </TableRow>
+
+        <!-- Row 3 Starts From Here -->
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/id_mail_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filter:"
+                android:textSize="12dp"
+                android:padding="20dp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_weight="1"
+                />
+
+            <EditText
+                android:id="@+id/id_mail_filter_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:editable="true"
+                android:textSize="12dp"
+                android:padding="20dp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:gravity="center"/>
+
+
+
+        </TableRow>
+
+        <!-- Row 4 Starts From Here -->
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/id_btn_reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset"
+                android:onClick="onClick"
+                android:textSize="12dp"
+                android:padding="20dp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_weight="1"
+                />
+
+            <Button
+                android:id="@+id/id_btn_apply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apply"
+                android:onClick="onClick"
+                android:textSize="12dp"
+                android:padding="20dp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:gravity="center"/>
+
+        </TableRow>
+
+        <!-- Row 5 Starts From Here -->
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Version:singleTask.FLAG_ACTIVITY_NEW_TASK.BigTextStyle.ClickIntent.NotAutoCancel.Reply.onNewIntent.requestCode.publishChannel.TableLayout.getSharedPreferences.Filter"
+                android:textSize="10dp"
+                android:padding="20dp"
+                android:layout_span="3"
+                android:textColor="#000000"
+                android:gravity="center"/>
+
+        </TableRow>
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/id_mail_subject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="mailsubject"
+                android:textSize="12dp"
+                android:padding="20dp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_weight="1"
+                />
+
+            <TextView
+                android:id="@+id/id_mail_body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="mailbody"
+                android:autoLink="all"
+                android:textSize="12dp"
+                android:padding="20dp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:gravity="center"/>
+
+        </TableRow>
+
+    </TableLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
