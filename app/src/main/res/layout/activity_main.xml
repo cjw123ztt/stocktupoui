@@ -43,7 +43,7 @@
 
             <TextView
                 android:id="@+id/id_mail_client_id"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="ClientId:"
                 android:textSize="12dp"
@@ -80,7 +80,7 @@
 
             <TextView
                 android:id="@+id/id_mail_filter"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Filter:"
                 android:textSize="12dp"
@@ -117,7 +117,7 @@
 
             <Button
                 android:id="@+id/id_btn_reset"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Reset"
                 android:onClick="onClick"
