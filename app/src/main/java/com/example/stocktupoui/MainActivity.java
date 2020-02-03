@@ -71,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //
         setupConnectionFactory();
         //
+        debug();
+        //
     }
     @Override
     protected void onStart() {
@@ -121,6 +123,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
         super.onDestroy();
+    }
+    private void debug()
+    {
+        String content = "I am noob from runoob.com.";
+        String pattern = ".*runoob.*";
+        //pattern        = "(o)+";
+        pattern        = "o1+";
+        boolean isMatch = Pattern.matches(pattern, content);
+        System.out.println("pattern: " + pattern);
+        System.out.println("字符串中是否包含了 'runoob' 子字符串? " + isMatch);
+        // 创建 Pattern 对象
+        Pattern r = Pattern.compile(pattern);
+        // 现在创建 matcher 对象
+        Matcher m = r.matcher(content);
+        if (m.find()) {
+            System.out.println("match: " + pattern);
+        }
+        else
+        {
+            System.out.println("not match: " + pattern);
+        }
     }
     @Override
     public void onConfigurationChanged(Configuration newConfig)
@@ -583,6 +606,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 //send_reply_broadcast_notification(mailSubject.toString(), mailBody.toString(),String.format("%s:%s:filter:%s:Pattern.matches",clientProvideName,String.valueOf(bMatch),filter));
                                 if (tag.indexOf(filter)>=0||mailBody.toString().indexOf(filter)>=0||mailSubject.toString().indexOf(filter)>=0)
                                 {
+                                    bMatch = true;
+                                }
+                                String content = tag + Subject + Body;
+                                Pattern r = Pattern.compile(filter);
+                                // 现在创建 matcher 对象
+                                Matcher m = r.matcher(content);
+                                if (m.find()) {
                                     bMatch = true;
                                 }
                                 //send_reply_broadcast_notification(mailSubject.toString(), mailBody.toString(),String.format("%s:%s:filter:%s:indexOf",clientProvideName,String.valueOf(bMatch),filter));
