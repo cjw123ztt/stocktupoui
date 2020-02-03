@@ -56,11 +56,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             clientProvideName = sharedPreferences.getString(Constants.CLIENT_ID,Constants.DEFAULT_CLIENT_ID);
             filter            = sharedPreferences.getString(Constants.FILTER_ID,Constants.DEFAULT_FILTER_ID);
+            comments          = sharedPreferences.getString(Constants.COMMENTS_ID,Constants.DEFAULT_COMMENTS_ID);
         }
-        if ( clientProvideName=="")
-        {
-            clientProvideName = Constants.DEFAULT_CLIENT_ID;
-        }
+        //if ( clientProvideName=="")
+        //{
+        //    clientProvideName = Constants.DEFAULT_CLIENT_ID;
+        //}
         //
         initControl();
         //
@@ -193,11 +194,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //
         outState.putString(Constants.CLIENT_ID,clientProvideName);
         outState.putString(Constants.FILTER_ID,filter);
+        outState.putString(Constants.COMMENTS_ID,comments);
         //
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.DEFAULT_CLIENT_ID, Context.MODE_PRIVATE);
         android.content.SharedPreferences.Editor editor = sharedPreferences.edit();//获取编辑器
         editor.putString(Constants.CLIENT_ID,clientProvideName);
         editor.putString(Constants.FILTER_ID,filter);
+        editor.putString(Constants.COMMENTS_ID,comments);
         editor.commit();//提交修改
         //
         //send_notification("onSaveInstanceState",String.format("%d:%s:%s",getTaskId(),clientProvideName,filter));
@@ -207,9 +210,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run() {
                 TextView tvSubject = (TextView) findViewById(R.id.id_mail_subject);
-                tvSubject.setText(subject);
-                TextView tvBody = (TextView) findViewById(R.id.id_mail_body);
-                tvBody.setText(body);
+                tvSubject.setText(subject+"\r\n"+body);
+                //TextView tvBody = (TextView) findViewById(R.id.id_mail_body);
+                //tvBody.setText(body);
             }
         });
     }
@@ -237,6 +240,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvFilter.setFocusable(true);
         tvFilter.requestFocus();
         tvFilter.setText(filter);
+        //
+        EditText tvComments = (EditText) findViewById(R.id.id_mail_comments_content);
+        tvComments.setFocusableInTouchMode(true);
+        tvComments.setFocusable(true);
+        tvComments.requestFocus();
+        tvComments.setText(comments);
     }
     public void onClick(View v) {
         switch (v.getId()) {
@@ -257,11 +266,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 clientProvideName = tvClientId.getText().toString();
                 EditText tvFilter = (EditText) findViewById(R.id.id_mail_filter_content);
                 filter = tvFilter.getText().toString();
-                send_notification("onClick","R.id.id_btn_apply:"+clientProvideName+":"+filter);
+                EditText tvComments = (EditText) findViewById(R.id.id_mail_comments_content);
+                comments = tvComments.getText().toString();
+                //send_notification("onClick","R.id.id_btn_apply:"+clientProvideName+":"+filter);
                 SharedPreferences sharedPreferences = getSharedPreferences(Constants.DEFAULT_CLIENT_ID, Context.MODE_PRIVATE);
                 android.content.SharedPreferences.Editor editor = sharedPreferences.edit();//获取编辑器
                 editor.putString(Constants.CLIENT_ID,clientProvideName);
                 editor.putString(Constants.FILTER_ID,filter);
+                editor.putString(Constants.COMMENTS_ID,comments);
                 editor.commit();
                 break;
             default:
@@ -272,6 +284,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String filter="";
     String clientProvideName="";
     String clientId="";
+    String comments="";
     private Thread connectionThread;
     ConnectionFactory factory = new ConnectionFactory();
     private Connection connection;
@@ -552,26 +565,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Object objNotifyId = properties.getHeaders().get(Constants.REQUEST_NOTIFICATION_ID);
                             Log.d("twapui", "handleDelivery:mailSubject:"+new String(mailSubject.toString()));
                             Log.d("twapui", "handleDelivery:mailBody:"+new String(mailBody.toString()));
-                            //Log.d("twapui", new String(body));
-                            onMessageReceived(mailSubject.toString(),mailBody.toString());
                             //
                             String tag = "N/A";
                             if ( mailTag!=null)
                             {
                                 tag = mailTag.toString();
                             }
+                            String Subject = mailSubject.toString();
+                            String Body    = mailBody.toString();
+                            onMessageReceived(clientProvideName+":" + tag + "\r\n"+Subject,Body);
                             Log.d("twapui", "handleDelivery:mailTag:"+tag+":filter:"+filter);
                             //
                             boolean bFilter = true;
-                            if (filter!="")
+                            if (filter!=""&&filter!=null)
                             {
                                 boolean bMatch = Pattern.matches(filter, tag) || Pattern.matches(filter, mailSubject.toString())|| Pattern.matches(filter, mailBody.toString());
-                                send_reply_broadcast_notification(mailSubject.toString(), mailBody.toString(), String.format("%s:%s:%s",String.valueOf(bMatch),filter,clientProvideName));
-                                //boolean bMatch = false;
+                                //send_reply_broadcast_notification(mailSubject.toString(), mailBody.toString(),String.format("%s:%s:filter:%s:Pattern.matches",clientProvideName,String.valueOf(bMatch),filter));
                                 if (tag.indexOf(filter)>=0||mailBody.toString().indexOf(filter)>=0||mailSubject.toString().indexOf(filter)>=0)
                                 {
-                                    //bMatch = true;
+                                    bMatch = true;
                                 }
+                                //send_reply_broadcast_notification(mailSubject.toString(), mailBody.toString(),String.format("%s:%s:filter:%s:indexOf",clientProvideName,String.valueOf(bMatch),filter));
                                 Log.d("twapui", String.format("handleDelivery.Filter.Result:%s:%s:%s",String.valueOf(bMatch),filter,tag));
                                 bFilter = bMatch;
                             }
@@ -580,10 +594,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 int requestNotifyId = 0;
                                 if (objNotifyId != null) {
                                     requestNotifyId = Integer.parseInt(objNotifyId.toString());
-                                    send_reply_broadcast_notification(mailSubject.toString(), mailBody.toString(), tag, requestNotifyId);
+                                    send_reply_broadcast_notification(Subject,Body,clientProvideName+":"+tag, requestNotifyId);
                                     Log.d("twapui", String.format("handleDelivery.requestNotifyId:%d", requestNotifyId));
                                 } else {
-                                    send_reply_broadcast_notification(mailSubject.toString(), mailBody.toString(), tag);
+                                    send_reply_broadcast_notification(Subject, Body, tag);
                                 }
                             }
                             //

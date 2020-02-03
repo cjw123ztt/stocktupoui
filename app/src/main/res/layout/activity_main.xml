@@ -7,7 +7,6 @@
     tools:context=".MainActivity">
 
     <TableLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:shrinkColumns="*"
@@ -60,6 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
+                android:singleLine="true"
                 android:editable="true"
                 android:textSize="12dp"
                 android:padding="20dp"
@@ -68,7 +68,7 @@
                 android:layout_weight="1"
                 android:gravity="center"/>
 
-
+          
         </TableRow>
 
         <!-- Row 3 Starts From Here -->
@@ -96,7 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:editable="true"
+                android:singleLine="true"
                 android:textSize="12dp"
                 android:padding="20dp"
                 android:textColor="#000000"
@@ -148,29 +148,32 @@
         <TableRow
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
+            android:gravity="left">
 
-            <TextView
-                android:layout_width="fill_parent"
+            <EditText
+                android:id="@+id/id_mail_comments_content"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Version:singleTask.FLAG_ACTIVITY_NEW_TASK.BigTextStyle.ClickIntent.NotAutoCancel.Reply.onNewIntent.requestCode.publishChannel.TableLayout.getSharedPreferences.Filter"
-                android:textSize="10dp"
+                android:text=""
+                android:textSize="12dp"
                 android:padding="20dp"
-                android:layout_span="3"
                 android:textColor="#000000"
+                android:textStyle="bold"
+                android:layout_weight="1"
                 android:gravity="center"/>
 
         </TableRow>
         <TableRow
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
+            android:gravity="left">
 
             <TextView
                 android:id="@+id/id_mail_subject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="mailsubject"
+                android:text=""
+                android:autoLink="all"
                 android:textSize="12dp"
                 android:padding="20dp"
                 android:textColor="#000000"
@@ -178,19 +181,6 @@
                 android:gravity="center"
                 android:layout_weight="1"
                 />
-
-            <TextView
-                android:id="@+id/id_mail_body"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="mailbody"
-                android:autoLink="all"
-                android:textSize="12dp"
-                android:padding="20dp"
-                android:textColor="#000000"
-                android:textStyle="bold"
-                android:layout_weight="1"
-                android:gravity="center"/>
 
         </TableRow>
 
